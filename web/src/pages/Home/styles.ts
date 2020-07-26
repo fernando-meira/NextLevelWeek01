@@ -2,6 +2,7 @@ import styled from "styled-components";
 import media from "styled-media-query";
 
 import logo from "../../assets/home-background.svg";
+import colors from "../../assets/colors";
 
 export const Container = styled.div`
   height: 100vh;
@@ -34,7 +35,7 @@ export const Content = styled.div`
 
     > h1 {
       font-size: 54px;
-      color: var(--title-color);
+      color: ${colors.titleColor};
     }
 
     > p {
@@ -56,7 +57,7 @@ export const Content = styled.div`
       align-items: center;
 
       text-decoration: none;
-      background: var(--primary-color);
+      background: ${colors.primaryColor};
       transition: background-color 0.2s;
 
       :hover {
