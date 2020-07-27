@@ -1,6 +1,6 @@
 import React from "react";
 
-import Global from "./assets/global";
+import Global from "./themes/global";
 
 import Routes from "./routes";
 

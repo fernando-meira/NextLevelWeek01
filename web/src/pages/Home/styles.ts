@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import media from "styled-media-query";
 
-import logo from "../../assets/home-background.svg";
-import colors from "../../assets/colors";
+import logo from "../../themes/assets/home-background.svg";
+import colors from "../../themes/colors";
 
 export const Container = styled.div`
   height: 100vh;
