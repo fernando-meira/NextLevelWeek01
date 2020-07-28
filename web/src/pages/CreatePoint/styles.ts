@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Map as MapComponent } from "react-leaflet";
 
 import colors from "../../themes/colors";
 
@@ -178,4 +179,10 @@ export const Button = styled.button`
   :hover {
     background: ${colors.green};
   }
+`;
+
+export const Map = styled(MapComponent)`
+  min-height: 300px;
+
+  margin-bottom: 26px;
 `;
