@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { TileLayer, Marker } from "react-leaflet";
 import axios from "axios";
+import { LeafletMouseEvent } from "leaflet";
 
 import api from "../../services/api";
 
@@ -21,9 +22,24 @@ interface IBGEUFResponse {
   sigla: string;
 }
 
+interface IBGECityResponse {
+  nome: string;
+}
+
 const CreatePoint = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [places, setPlaces] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+
+  const [selectedUF, setSelectedUF] = useState<string>("0");
+  const [selectedCity, setSelectedCity] = useState<string>("0");
+
+  const handleSelectCity = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      setSelectedCity(event.target.value);
+    },
+    []
+  );
 
   useEffect(() => {
     async function fetchItems() {
@@ -46,6 +62,30 @@ const CreatePoint = () => {
         setPlaces(ufInitials);
       });
   }, []);
+
+  useEffect(() => {
+    if (selectedUF === "0") {
+      return;
+    }
+
+    axios
+      .get<IBGECityResponse[]>(
+        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUF}/municipios`
+      )
+      .then((response) => {
+        const cityNames = response.data.map((city) => city.nome);
+
+        setCities(cityNames);
+      });
+  }, [selectedUF]);
+
+  const handleSelectUf = (event: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedUF(event.target.value);
+  };
+
+  const handleMapClick = (event: LeafletMouseEvent) => {
+    console.log(event.latlng);
+  };
 
   return (
     <Container>
@@ -97,21 +137,26 @@ const CreatePoint = () => {
             <span>Selecione o endereço no mapa</span>
           </legend>
 
-          <Map center={[-23.6074648, -48.043701]} zoom={15}>
+          <Map center={[-23.6067988, -48.047176]} zoom={15}>
             <TileLayer
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            <Marker position={[-23.6074648, -48.043701]} />
+            <Marker position={[-23.6067988, -48.047176]} />
           </Map>
 
           <div className="field-group">
             <Field>
               <label htmlFor="uf">Estado (UF)</label>
 
-              <select name="uf" id="uf">
-                <option valur="0">Selecione uma UF</option>
+              <select
+                name="uf"
+                id="uf"
+                value={selectedUF}
+                onChange={handleSelectUf}
+              >
+                <option value="0">Selecione uma UF</option>
                 {places.map((place) => (
                   <option key={place} value={place}>
                     {place}
@@ -123,8 +168,18 @@ const CreatePoint = () => {
             <Field>
               <label htmlFor="city">Cidade</label>
 
-              <select name="city" id="city">
+              <select
+                value={selectedCity}
+                name="city"
+                id="city"
+                onChange={handleSelectCity}
+              >
                 <option value="0">Selecione uma Cidade</option>
+                {cities.map((city) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
               </select>
             </Field>
           </div>

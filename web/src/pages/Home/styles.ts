@@ -8,6 +8,11 @@ export const Container = styled.div`
   height: 100vh;
 
   background: url(${logo}) no-repeat 600px bottom;
+
+  ${media.greaterThan("huge")`
+    background: url(${logo}) no-repeat 900px bottom;
+
+  `}
 `;
 
 export const Content = styled.div`
@@ -20,6 +25,10 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
+  ${media.greaterThan("huge")`
+    max-width: 1600px;
+  `}
 
   header {
     margin: 48px 0 0;
