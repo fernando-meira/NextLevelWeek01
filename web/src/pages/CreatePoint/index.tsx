@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { TileLayer, Marker } from "react-leaflet";
@@ -11,6 +11,16 @@ import logo from "../../themes/assets/logo.svg";
 import { Container, Field, ListItem, Button, Map } from "./styles";
 
 const CreatePoint = () => {
+  useEffect(() => {
+    async function fetchData() {
+      const { data } = await api.get("/items");
+
+      console.log(data);
+    }
+
+    fetchData();
+  }, []);
+
   return (
     <Container>
       <header>
