@@ -34,6 +34,19 @@ const CreatePoint = () => {
   const [selectedUF, setSelectedUF] = useState<string>("0");
   const [selectedCity, setSelectedCity] = useState<string>("0");
 
+  const [initialPosition, setInitialPosition] = useState<[number, number]>([
+    -23.6136231,
+    -48.0505933,
+  ]);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+
+      setInitialPosition([latitude, longitude]);
+    });
+  }, []);
+
   const handleSelectCity = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       setSelectedCity(event.target.value);
@@ -84,7 +97,7 @@ const CreatePoint = () => {
   };
 
   const handleMapClick = (event: LeafletMouseEvent) => {
-    console.log(event.latlng);
+    setInitialPosition([event.latlng.lat, event.latlng.lng]);
   };
 
   return (
@@ -137,13 +150,13 @@ const CreatePoint = () => {
             <span>Selecione o endereço no mapa</span>
           </legend>
 
-          <Map center={[-23.6067988, -48.047176]} zoom={15}>
+          <Map center={initialPosition} zoom={15} onclick={handleMapClick}>
             <TileLayer
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            <Marker position={[-23.6067988, -48.047176]} />
+            <Marker position={initialPosition} />
           </Map>
 
           <div className="field-group">

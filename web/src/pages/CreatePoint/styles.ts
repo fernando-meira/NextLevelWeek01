@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Map as MapComponent } from "react-leaflet";
+import { Map as MapComponent, MapProps } from "react-leaflet";
 
 import colors from "../../themes/colors";
 
@@ -181,7 +181,7 @@ export const Button = styled.button`
   }
 `;
 
-export const Map = styled(MapComponent)`
+export const Map = styled(MapComponent).attrs((props: MapProps) => props)`
   min-height: 300px;
 
   margin-bottom: 26px;
