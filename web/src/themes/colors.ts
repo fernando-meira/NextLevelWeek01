@@ -6,6 +6,7 @@ export default {
 
   textColor: "#6c6c80",
 
+  white: "#fff",
   whiteIce: "#F0F0F5",
 
   purple: "#6C6C80",
