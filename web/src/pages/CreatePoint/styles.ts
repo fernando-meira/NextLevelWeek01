@@ -137,6 +137,11 @@ export const ListItem = styled.ul`
 
   list-style: none;
 
+  li.selected {
+    background: #e1faec;
+    border: 2px solid #34cb79;
+  }
+
   li {
     height: 180px;
     border-radius: 8px;
@@ -182,7 +187,9 @@ export const Button = styled.button`
 `;
 
 export const Map = styled(MapComponent).attrs((props: MapProps) => props)`
-  min-height: 300px;
+  width: 100%;
+  min-height: 350px;
+  border-radius: 8px;
 
-  margin-bottom: 26px;
+  margin-bottom: 24px;
 `;

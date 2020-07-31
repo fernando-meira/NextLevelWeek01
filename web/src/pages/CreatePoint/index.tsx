@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { TileLayer, Marker } from "react-leaflet";
 import axios from "axios";
@@ -27,16 +27,22 @@ interface IBGECityResponse {
 }
 
 const CreatePoint = () => {
+  const history = useHistory();
+
   const [items, setItems] = useState<Item[]>([]);
   const [places, setPlaces] = useState<string[]>([]);
   const [cities, setCities] = useState<string[]>([]);
-
   const [selectedUF, setSelectedUF] = useState<string>("0");
   const [selectedCity, setSelectedCity] = useState<string>("0");
-
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    whatsapp: "",
+  });
   const [initialPosition, setInitialPosition] = useState<[number, number]>([
-    -23.6136231,
-    -48.0505933,
+    0,
+    0,
   ]);
 
   useEffect(() => {
@@ -100,6 +106,51 @@ const CreatePoint = () => {
     setInitialPosition([event.latlng.lat, event.latlng.lng]);
   };
 
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSelectItem = (id: number) => {
+    const alreadySelected = selectedItems.findIndex((item) => item === id);
+
+    if (alreadySelected >= 0) {
+      const filteredItems = selectedItems.filter((item) => item !== id);
+
+      setSelectedItems(filteredItems);
+    } else {
+      setSelectedItems([...selectedItems, id]);
+    }
+  };
+
+  async function handleSubmit(event: ChangeEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const uf = selectedUF;
+    const items = selectedItems;
+    const city = selectedCity;
+    const { name, email, whatsapp } = formData;
+    const [latitude, longitude] = initialPosition;
+
+    const data = {
+      uf,
+      items,
+      city,
+      name,
+      email,
+      whatsapp,
+      latitude,
+      longitude,
+    };
+
+    await api.post("points", data);
+
+    alert("Ponto criado com sucesso!");
+
+    history.push("/");
+  }
+
   return (
     <Container>
       <header>
@@ -111,7 +162,7 @@ const CreatePoint = () => {
         </Link>
       </header>
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <h1>
           Cadastro do
           <br /> ponto de coleta
@@ -125,20 +176,35 @@ const CreatePoint = () => {
           <Field>
             <label htmlFor="name">Nome da entidade</label>
 
-            <input type="text" id="name" name="name" />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              onChange={handleInputChange}
+            />
           </Field>
 
           <div className="field-group">
             <Field>
               <label htmlFor="email">E-mail</label>
 
-              <input type="email" id="email" name="email" />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                onChange={handleInputChange}
+              />
             </Field>
 
             <Field>
               <label htmlFor="whatsapp">Whatsapp</label>
 
-              <input type="text" id="whatsapp" name="whatsapp" />
+              <input
+                type="tel"
+                id="whatsapp"
+                name="whatsapp"
+                onChange={handleInputChange}
+              />
             </Field>
           </div>
         </fieldset>
@@ -207,7 +273,11 @@ const CreatePoint = () => {
 
           <ListItem>
             {items.map((item) => (
-              <li key={item.id}>
+              <li
+                key={item.id}
+                onClick={() => handleSelectItem(item.id)}
+                className={selectedItems.includes(item.id) ? "selected" : ""}
+              >
                 <img src={item.image_url} alt={item.title} />
 
                 <span>{item.title}</span>
